@@ -1,7 +1,7 @@
 # 2026-2027
 
 
-#Projected Tasks 
+# Projected Tasks 
 Mecha drive system
 Computer vision 
 
