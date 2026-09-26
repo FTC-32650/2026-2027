@@ -2,6 +2,6 @@
 
 
 # Projected Tasks 
-Mecha drive system
-Computer vision 
+- Mecha drive system
+- Computer vision 
 
