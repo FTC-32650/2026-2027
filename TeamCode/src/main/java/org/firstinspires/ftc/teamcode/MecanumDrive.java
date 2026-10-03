@@ -54,7 +54,7 @@ public class MecanumDrive extends LinearOpMode {
             frontRight.setPower(frontRightPower);
             backRight.setPower(backRightPower);
 
-            if (gamepad1.x) {
+            if (gamepad1.square) {
                 intake.setPower(-1.0);
             } else {
                 intake.setPower(0);
