@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -21,20 +20,23 @@ public class MecanumDrive extends LinearOpMode {
     private DcMotor backLeft = null;
     private DcMotor backRight = null;
 
+    private DcMotor intake = null;
+
     @Override
     public void runOpMode() throws InterruptedException {
         // name strings must match up with the config on the Robot Controller App
         frontLeft = hardwareMap.get(DcMotor.class, "left_front");
-        frontRight = hardwareMap.get(D cMotor.class, "right_front");
+        frontRight = hardwareMap.get(DcMotor.class, "right_front");
         backLeft = hardwareMap.get(DcMotor.class, "left_back");
-        frontLeft = hardwareMap.get(DcMotor.class, "right_back");
+        backRight = hardwareMap.get(DcMotor.class, "right_back");
+        intake = hardwareMap.get(DcMotor.class, "intake");
 
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
         waitForStart();
 
-        if (isStopRequested())) return;
+        if (isStopRequested()) return;
         while (opModeIsActive())
         {
             double y = -gamepad1.left_stick_y;
@@ -45,12 +47,18 @@ public class MecanumDrive extends LinearOpMode {
             double frontLeftPower = (y + x + rx) / denominator;
             double backLeftPower = (y - x + rx) / denominator;
             double frontRightPower = (y - x - rx) / denominator;
-            double backLeftPower = (y + x - rx) / denominator;
+            double backRightPower = (y + x - rx) / denominator;
 
             frontLeft.setPower(frontLeftPower);
             backLeft.setPower(backLeftPower);
             frontRight.setPower(frontRightPower);
             backRight.setPower(backRightPower);
+
+            if (gamepad1.x) {
+                intake.setPower(1.0);
+            } else {
+                intake.setPower(0);
+            }
         }
     }
 }
