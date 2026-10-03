@@ -25,10 +25,10 @@ public class MecanumDrive extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // name strings must match up with the config on the Robot Controller App
-        frontLeft = hardwareMap.get(DcMotor.class, "left_front");
-        frontRight = hardwareMap.get(DcMotor.class, "right_front");
-        backLeft = hardwareMap.get(DcMotor.class, "left_back");
-        backRight = hardwareMap.get(DcMotor.class, "right_back");
+        frontLeft = hardwareMap.get(DcMotor.class, "left_front"); // 0
+        frontRight = hardwareMap.get(DcMotor.class, "right_front"); // 2
+        backLeft = hardwareMap.get(DcMotor.class, "left_back"); // 1
+        backRight = hardwareMap.get(DcMotor.class, "right_back"); // 3
         intake = hardwareMap.get(DcMotor.class, "intake");
 
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -55,7 +55,7 @@ public class MecanumDrive extends LinearOpMode {
             backRight.setPower(backRightPower);
 
             if (gamepad1.x) {
-                intake.setPower(1.0);
+                intake.setPower(-1.0);
             } else {
                 intake.setPower(0);
             }

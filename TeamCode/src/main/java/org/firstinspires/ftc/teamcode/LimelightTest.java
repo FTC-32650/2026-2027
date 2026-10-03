@@ -38,6 +38,7 @@ public class LimelightTest extends LinearOpMode {
            } else {
                telemetry.addData("Target Found:", "NO");
            }
+           telemetry.update();
        }
    }
 }
