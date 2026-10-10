@@ -12,6 +12,12 @@ public class PollenTrackingTest extends LinearOpMode {
     private DcMotor frontLeft, frontRight;
     private DcMotor backLeft, backRight;
 
+    private static final double TURN_KP = 0.018;
+    private static final double MAX_TURN = 0.25;
+    private static final double FORWARD_POWER = 0.18;
+    private static final double DEAD_BAND = 1.5;
+    private static final double STOP_AREA = 4.0;
+
 
     @Override
     public void runOpMode() {
@@ -35,56 +41,77 @@ public class PollenTrackingTest extends LinearOpMode {
         limelight3A.pipelineSwitch(1);
         limelight3A.start();
 
-        boolean tracking = false;
+        waitForStart();
+
+        if (isStopRequested()) {
+            limelight3A.stop();
+            return;
+        }
 
         while (opModeIsActive()) {
-            if (gamepad1.a) tracking = true;
-            if (gamepad1.b) tracking = false;
 
             LLResult result = limelight3A.getLatestResult();
 
-            boolean found = (result != null && result.isValid());
+            boolean found = result != null && result.isValid();
 
-            double tx = found ? result.getTx() : 0.0;
+            if (!found) {
+                stopDrive();
+
+                telemetry.addLine("No Target Detected");
+                telemetry.update();
+
+                idle();
+                continue;
+            }
+
+            double tx = result.getTx();
+            double ta = result.getTa();
+
             double turn = 0.0;
+            double forward = 0.0;
 
-            if (tracking && found) {
-                double deadband = 1.5;
+            if (ta >= STOP_AREA) {
+                stopDrive();
+                telemetry.addLine("Target reached");
+            } else {
+                if (Math.abs(tx) > DEAD_BAND) {
+                    turn = TURN_KP * tx;
+                    turn = Math.max(-MAX_TURN, Math.min(MAX_TURN, turn));
+                    }
 
-                if (Math.abs(tx) > deadband) {
-                    double kP = 0.018;
-                    turn = kP * tx;
+                forward = FORWARD_POWER;
 
-                    turn = Math.max(-0.25, Math.min(0.25, turn));
+                double leftPower = forward - turn;
+                double rightPower = forward - turn;
+
+                double maxPower = Math.max(1.0, Math.max(Math.abs(leftPower), Math.abs(rightPower)));
+
+                leftPower /= maxPower;
+                rightPower /= maxPower;
+
+                frontLeft.setPower(leftPower);
+                backLeft.setPower(leftPower);
+                frontRight.setPower(rightPower);
+                backRight.setPower(rightPower);
+
                 }
-            }
-            if (tracking && found) {
-                setDrive(-turn, turn, -turn, turn);
-            }   else {
-                    stopDrive();
-                }
 
-            telemetry.addData("Tracking enabled: ", tracking);
             telemetry.addData("Target found: ", found);
-            telemetry.addData("Horizontal Offset:", "%.2f", tx);
-            telemetry.addData("Turn command: ", "%.3f", turn);
-            telemetry.update();
+            telemetry.addData("Horizontal offset (tx): ", "%.2f", tx);
+            telemetry.addData("Target Area (ta): ", "%.2f%%", ta);
+            telemetry.addData("Forward Power: ", "%.2f", forward);
+            telemetry.addData("Turn correction: ", "%.3f", turn);
 
-            sleep(20);
+            idle();
             }
+
         stopDrive();
+        limelight3A.stop();
         }
-
-        private void setDrive(double fl, double fr, double bl, double br) {
-        frontLeft.setPower(fl);
-        frontRight.setPower(fr);
-        backLeft.setPower(bl);
-        backRight.setPower(br);
-        }
-
         private void stopDrive() {
-        setDrive(0, 0,0, 0);
-        }
+        frontLeft.setPower(0);
+        backLeft.setPower(0);
+        frontRight.setPower(0);
+        backRight.setPower(0);
     }
-
-
+}
