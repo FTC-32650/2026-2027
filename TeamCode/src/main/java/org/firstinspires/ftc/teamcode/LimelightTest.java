@@ -1,44 +1,40 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-@TeleOp(name="LimelightTest", group="Sensor")
-public class LimelightTest extends LinearOpMode {
-   private Limelight3A limelight;
+@Autonomous
+public class LimelightTest extends OpMode {
+    private Limelight3A limelight3A;
 
-   @Override
-    public void runOpMode() {
-       // make sure to put this deviceName into the tablet driver hub thingy
-       limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
-       limelight.setPollRateHz(100);
+    @Override
+    public void init() {
+        limelight3A = hardwareMap.get(Limelight3A.class, "limelight");
+        limelight3A.pipelineSwitch(1); // 0 is for apriltags and 1,2 for pollen and nectar respectively
+    }
 
-       telemetry.setMsTransmissionInterval(11);
+    @Override
+    public void start() {
+        limelight3A.start();
+    }
 
-       limelight.pipelineSwitch(0);
+    @Override
+    public void loop() {
+        LLResult llResult = limelight3A.getLatestResult();
+        assert llResult != null;
+        if (llResult.isValid()) {
+            telemetry.addData("Target Found:", "YES");
+            telemetry.addData("TX (Horizontal)", llResult.getTx());
+            telemetry.addData("TY (Vertical)", llResult.getTy());
+            telemetry.addData("TA (Target Area)", llResult.getTa());
+        }
+        telemetry.update();
 
-       limelight.start();
-
-       telemetry.addData("Status", "Limelight 3A Initialized");
-       telemetry.update();
-
-       waitForStart();
-
-       while (opModeIsActive()) {
-           LLResult result = limelight.getLatestResult();
-
-           if (result != null && result.isValid()) {
-               telemetry.addData("Target Found:", "YES");
-               telemetry.addData("TX (Horizontal)", result.getTx());
-               telemetry.addData("TY (Vertical)", result.getTy());
-               telemetry.addData("TA (Target Area)", result.getTa());
-           } else {
-               telemetry.addData("Target Found:", "NO");
-           }
-           telemetry.update();
-       }
-   }
+    }
 }
+
+
+
