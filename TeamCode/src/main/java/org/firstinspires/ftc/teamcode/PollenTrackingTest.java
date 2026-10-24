@@ -35,13 +35,12 @@ public class PollenTrackingTest extends LinearOpMode {
 
         stopDrive();
 
-        telemetry.addLine("BioBuzz Pollen Tracker");
-        telemetry.update();
-
-        waitForStart();
-
+        // Start the camera during init so it's already streaming results at START
         limelight3A.pipelineSwitch(1);
         limelight3A.start();
+
+        telemetry.addLine("BioBuzz Pollen Tracker");
+        telemetry.update();
 
         waitForStart();
 
@@ -58,6 +57,7 @@ public class PollenTrackingTest extends LinearOpMode {
 
             if (!found) {
                 stopDrive();
+                intake.setPower(0);
 
                 telemetry.addLine("No Target Detected");
                 telemetry.update();
@@ -84,7 +84,8 @@ public class PollenTrackingTest extends LinearOpMode {
 
                 forward = FORWARD_POWER;
 
-                double leftPower = forward - turn;
+                // tx > 0 means the ball is to the right -> speed up left side to turn right
+                double leftPower = forward + turn;
                 double rightPower = forward - turn;
 
                 double maxPower = Math.max(1.0, Math.max(Math.abs(leftPower), Math.abs(rightPower)));
@@ -104,6 +105,7 @@ public class PollenTrackingTest extends LinearOpMode {
             telemetry.addData("Target Area (ta): ", "%.2f%%", ta);
             telemetry.addData("Forward Power: ", "%.2f", forward);
             telemetry.addData("Turn correction: ", "%.3f", turn);
+            telemetry.update(); // was missing: screen stayed stuck on "No Target Detected"
 
             idle();
             }
