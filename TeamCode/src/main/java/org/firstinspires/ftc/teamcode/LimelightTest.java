@@ -13,7 +13,7 @@ public class LimelightTest extends OpMode {
     @Override
     public void init() {
         limelight3A = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight3A.pipelineSwitch(1); // 0 is for apriltags and 1,2 for pollen and nectar respectively
+        limelight3A.pipelineSwitch(1); // 0 is for apriltags for now
     }
 
     @Override
