@@ -11,6 +11,7 @@ public class PollenTrackingTest extends LinearOpMode {
     private Limelight3A limelight3A;
     private DcMotor frontLeft, frontRight;
     private DcMotor backLeft, backRight;
+    private DcMotor intake;
 
     private static final double TURN_KP = 0.018;
     private static final double MAX_TURN = 0.25;
@@ -24,7 +25,8 @@ public class PollenTrackingTest extends LinearOpMode {
         frontLeft = hardwareMap.get(DcMotor.class, "left_front");
         frontRight = hardwareMap.get(DcMotor.class, "right_front");
         backLeft = hardwareMap.get(DcMotor.class, "left_back");
-        backRight = hardwareMap.get(DcMotor.class, "right_back"); // remember deviceNames
+        backRight = hardwareMap.get(DcMotor.class, "right_back");
+        intake = hardwareMap.get(DcMotor.class, "intake"); // remember deviceNames
 
         limelight3A = hardwareMap.get(Limelight3A.class, "limelight");
 
@@ -73,6 +75,7 @@ public class PollenTrackingTest extends LinearOpMode {
             if (ta >= STOP_AREA) {
                 stopDrive();
                 telemetry.addLine("Target reached");
+                intake.setPower(-1.0);
             } else {
                 if (Math.abs(tx) > DEAD_BAND) {
                     turn = TURN_KP * tx;
