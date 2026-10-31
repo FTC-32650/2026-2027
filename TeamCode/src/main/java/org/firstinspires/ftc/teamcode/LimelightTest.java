@@ -13,7 +13,7 @@ public class LimelightTest extends OpMode {
     @Override
     public void init() {
         limelight3A = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight3A.pipelineSwitch(1); // 0 is for apriltags for now
+        limelight3A.pipelineSwitch(1); // 1 = pollen / game piece, 2 = AprilTags
     }
 
     @Override
@@ -24,15 +24,22 @@ public class LimelightTest extends OpMode {
     @Override
     public void loop() {
         LLResult llResult = limelight3A.getLatestResult();
-        assert llResult != null;
-        if (llResult.isValid()) {
+        // Note: Java asserts are disabled on Android, so check for null explicitly
+        if (llResult != null && llResult.isValid()) {
             telemetry.addData("Target Found:", "YES");
             telemetry.addData("TX (Horizontal)", llResult.getTx());
             telemetry.addData("TY (Vertical)", llResult.getTy());
             telemetry.addData("TA (Target Area)", llResult.getTa());
+        } else {
+            telemetry.addData("Target Found:", "NO");
         }
         telemetry.update();
 
+    }
+
+    @Override
+    public void stop() {
+        limelight3A.stop();
     }
 }
 
