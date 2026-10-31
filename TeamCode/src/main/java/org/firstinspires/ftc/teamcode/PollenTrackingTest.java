@@ -98,7 +98,7 @@ public class PollenTrackingTest extends LinearOpMode {
             double turn = 0.0;
             double forward = 0.0;
 
-            if (ta >= STOP_AREA) {
+            if (ta >= STOP_AREA && Math.abs(tx) <= 3.0) {
                 stopDrive();
                 telemetry.addLine("Target reached");
                 intake.setPower(-1.0);
