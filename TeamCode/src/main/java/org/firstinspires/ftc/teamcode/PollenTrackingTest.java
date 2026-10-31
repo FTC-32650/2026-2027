@@ -38,8 +38,9 @@ public class PollenTrackingTest extends LinearOpMode {
 
         limelight3A = hardwareMap.get(Limelight3A.class, "limelight");
 
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
+        // Right side is reversed (confirmed on the robot; matches pedro/Constants.java)
+        frontRight.setDirection(DcMotor.Direction.REVERSE);
+        backRight.setDirection(DcMotor.Direction.REVERSE);
 
         stopDrive();
 
