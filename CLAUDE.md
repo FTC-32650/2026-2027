@@ -60,9 +60,9 @@ Limelight pipelines: `1` = pollen / game piece, `2` = AprilTags.
 
 ## Known issues
 
-- Motor directions disagree: `MecanumDrive.java` (and the vision OpModes) reverse
-  the **left** motors, while `pedro/Constants.java` reverses the **right** motors.
-  One of them is wrong; it needs to be checked on the robot before changing either.
+- Motor directions: the **right** motors are reversed everywhere (`MecanumDrive`,
+  the vision OpModes and `pedro/Constants.java`). Confirmed on the robot —
+  reversing the left side instead made `PollenTrackingTest` drive backwards.
 
 ## Conventions
 
