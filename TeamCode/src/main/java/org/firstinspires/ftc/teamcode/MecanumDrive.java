@@ -31,8 +31,9 @@ public class MecanumDrive extends LinearOpMode {
         backRight = hardwareMap.get(DcMotor.class, "right_back"); // 3
         intake = hardwareMap.get(DcMotor.class, "intake");
 
-        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        // Right side is reversed (confirmed on the robot; matches pedro/Constants.java)
+        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         waitForStart();
 
