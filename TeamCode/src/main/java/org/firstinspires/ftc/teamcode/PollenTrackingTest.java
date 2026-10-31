@@ -113,6 +113,7 @@ public class PollenTrackingTest extends LinearOpMode {
                 }
 
                 forward = FORWARD_POWER;
+                intake.setPower(-1.0);
 
                 // tx > 0 means the ball is to the right -> speed up left side to turn right
                 double leftPower = forward + turn;
