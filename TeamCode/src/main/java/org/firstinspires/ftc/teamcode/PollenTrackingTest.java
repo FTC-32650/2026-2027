@@ -5,7 +5,6 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous
 public class PollenTrackingTest extends LinearOpMode {
@@ -19,13 +18,6 @@ public class PollenTrackingTest extends LinearOpMode {
     private static final double FORWARD_POWER = 0.18;
     private static final double DEAD_BAND = 1.5;
     private static final double STOP_AREA = 4.0;
-
-    // Once the piece is close, keep the intake running this long even if the camera
-    // loses sight of it (it usually drops out of view right as it gets pulled in)
-    private static final double INTAKE_HOLD_SECONDS = 1.0;
-
-    private final ElapsedTime intakeTimer = new ElapsedTime();
-    private boolean intaking = false;
 
 
     @Override
@@ -59,24 +51,6 @@ public class PollenTrackingTest extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            // Finish an intake cycle before looking for the next target
-            if (intaking) {
-                if (intakeTimer.seconds() < INTAKE_HOLD_SECONDS) {
-                    stopDrive();
-                    intake.setPower(-1.0);
-
-                    telemetry.addLine("Intaking...");
-                    telemetry.addData("Time left: ", "%.2f s",
-                            INTAKE_HOLD_SECONDS - intakeTimer.seconds());
-                    telemetry.update();
-
-                    idle();
-                    continue;
-                }
-                intaking = false;
-                intake.setPower(0);
-            }
-
             LLResult result = limelight3A.getLatestResult();
 
             boolean found = result != null && result.isValid();
@@ -102,15 +76,11 @@ public class PollenTrackingTest extends LinearOpMode {
                 stopDrive();
                 telemetry.addLine("Target reached");
                 intake.setPower(-1.0);
-                intaking = true;
-                intakeTimer.reset();
             } else {
-                intake.setPower(0);
-
                 if (Math.abs(tx) > DEAD_BAND) {
                     turn = TURN_KP * tx;
                     turn = Math.max(-MAX_TURN, Math.min(MAX_TURN, turn));
-                }
+                    }
 
                 forward = FORWARD_POWER;
 
@@ -127,24 +97,23 @@ public class PollenTrackingTest extends LinearOpMode {
                 backLeft.setPower(leftPower);
                 frontRight.setPower(rightPower);
                 backRight.setPower(rightPower);
-            }
+
+                }
 
             telemetry.addData("Target found: ", found);
             telemetry.addData("Horizontal offset (tx): ", "%.2f", tx);
             telemetry.addData("Target Area (ta): ", "%.2f%%", ta);
             telemetry.addData("Forward Power: ", "%.2f", forward);
             telemetry.addData("Turn correction: ", "%.3f", turn);
-            telemetry.update();
+            telemetry.update(); // was missing: screen stayed stuck on "No Target Detected"
 
             idle();
-        }
+            }
 
         stopDrive();
-        intake.setPower(0);
         limelight3A.stop();
-    }
-
-    private void stopDrive() {
+        }
+        private void stopDrive() {
         frontLeft.setPower(0);
         backLeft.setPower(0);
         frontRight.setPower(0);
