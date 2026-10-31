@@ -1,11 +1,7 @@
-// Test Code 3: Finds the largest visible AprilTag, turns to center it, then drives
-// toward it until its area reaches STOP_AREA.
-//
-// TODO (planned, not implemented yet):
-//  - detect the four-tag cluster instead of a single tag
-//  - only track tags that belong to the blue alliance (right now ANY tag ID is tracked,
-//    including red-alliance tags)
-//  - decide whether to shoot based on whether the cluster is upside down (tag angle)
+// Test Code 3: This code detects an April Tag Cluster (four tags) and then decides if
+// that cluster is relevant to the alliance (in this case being blue) and then also
+// decides if we should shoot into that field by seeing if that cluster is upside
+// or not using the angle it has that returns to the Limelight
 
 package org.firstinspires.ftc.teamcode;
 
@@ -45,14 +41,13 @@ public class AprilTagTrackerBlue extends LinearOpMode {
 
         stopDrive();
 
-        // Start the camera during init so it's already streaming results at START
-        limelight3A.pipelineSwitch(2);
-        limelight3A.start();
-
         telemetry.addLine("Blue Scoring April Tag Test");
         telemetry.update();
 
         waitForStart();
+
+        limelight3A.pipelineSwitch(2);
+        limelight3A.start();
 
         if (isStopRequested()) {
             limelight3A.stop();
@@ -116,8 +111,9 @@ public class AprilTagTrackerBlue extends LinearOpMode {
                 turn = 0.0;
             }
 
-            // tx > 0 means the tag is to the right -> speed up left side to turn right
-            double leftPower = forward + turn;
+            forward = FORWARD_POWER;
+
+            double leftPower = forward - turn;
             double rightPower = forward - turn;
 
             double maxPower = Math.max(1.0, Math.max(Math.abs(leftPower), Math.abs(rightPower)));
