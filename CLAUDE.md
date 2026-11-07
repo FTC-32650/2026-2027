@@ -70,4 +70,8 @@ Limelight pipelines: `1` = pollen / game piece, `2` = AprilTags.
   Limelight during init (before `waitForStart()`), and stop motors/camera at the end.
 - Don't use Java `assert` — assertions are disabled on Android. Use explicit null checks.
 - Keep the README's status table and OpMode list in sync when adding or removing OpModes.
+- Keep this file current. In the same PR that adds or changes a hardware config
+  name, an OpMode, a dependency, a build step, or a convention, update the matching
+  section of CLAUDE.md (and the README if it covers the same thing). If you notice
+  this file disagrees with the code, fix it or flag it in the PR.
 - Work on a branch and open a PR; don't push directly to `main`.
