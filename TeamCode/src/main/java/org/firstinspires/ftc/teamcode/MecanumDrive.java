@@ -4,7 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-
 @TeleOp(name="Mecanum Drive Robot Centric", group="Iterative Opmode")
 public class MecanumDrive extends LinearOpMode {
 
@@ -23,6 +22,28 @@ public class MecanumDrive extends LinearOpMode {
     private DcMotor intake = null;
 
     private DcMotor launcher = null;
+
+    private boolean intakeState = false;
+    private int intakeCounter = 0;
+
+    public void toggleIntake()
+    {
+        if (gamepad1.square && intakeCounter > 30)
+        {
+            intakeState = !intakeState;
+            intakeCounter = 0;
+        }
+        intakeCounter++;
+        if (intakeState)
+        {
+            intake.setPower(-1.0);
+        }
+        else
+        {
+            intake.setPower(0);
+        }
+    }
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -58,17 +79,17 @@ public class MecanumDrive extends LinearOpMode {
             frontRight.setPower(frontRightPower);
             backRight.setPower(backRightPower);
 
+            // make methods
+
+            /*
             if (gamepad1.square) {
                 intake.setPower(-1.0);
             } else {
                 intake.setPower(0);
             }
+            */
 
-            if (gamepad1.cross) {
-                launcher.setPower(-1.0);
-            } else {
-                launcher.setPower(0);
-            }
+            toggleIntake();
 
         }
     }
