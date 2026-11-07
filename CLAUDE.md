@@ -53,6 +53,7 @@ Must match the Robot Controller configuration exactly:
 | Front left / back left motor | `left_front` / `left_back` |
 | Front right / back right motor | `right_front` / `right_back` |
 | Intake motor | `intake` |
+| Launcher motor | `launcher` |
 | Limelight 3A | `limelight` |
 | goBILDA Pinpoint | `pinpoint` |
 

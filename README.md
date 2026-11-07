@@ -15,6 +15,7 @@
 |---|---|---|
 | 🚗 Mecanum drive | ✅ Working | Robot-centric TeleOp on gamepad 1 |
 | 🧲 Intake | ✅ Working | Runs while **Square** is held |
+| 🚀 Launcher | 🔧 In progress | Runs while **Cross** is held; being developed now |
 | 👁️ Limelight vision | 🧪 Testing | Pollen tracking (pipeline 1) and AprilTags (pipeline 2) |
 | 🗺️ Pedro Pathing | 🔧 Tuning | Pinpoint odometry + Foresight follower; tuned values saved |
 | 🎯 Turret | ⏳ Not started | |
@@ -29,7 +30,7 @@ These show up on the Driver Station.
 ### TeleOp
 | Name | File | What it does |
 |---|---|---|
-| **Mecanum Drive Robot Centric** | `MecanumDrive.java` | Main driving code. Left stick drives/strafes, right stick turns, **Square** runs the intake. |
+| **Mecanum Drive Robot Centric** | `MecanumDrive.java` | Main driving code. Left stick drives/strafes, right stick turns, **Square** runs the intake, **Cross** runs the launcher. |
 
 ### Autonomous (tests)
 | Name | File | What it does |
@@ -54,6 +55,7 @@ The names in the Robot Controller config **must match these exactly**.
 | Front right motor | `right_front` | 2 |
 | Back right motor | `right_back` | 3 |
 | Intake motor | `intake` | — |
+| Launcher motor | `launcher` | — |
 | Limelight 3A | `limelight` | — |
 | goBILDA Pinpoint | `pinpoint` | — |
 
