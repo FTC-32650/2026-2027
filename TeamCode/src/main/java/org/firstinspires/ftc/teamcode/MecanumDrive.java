@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import org.firstinspires.ftc.teamcode.AprilTagAlignerBlue;
+
 @TeleOp(name="Mecanum Drive Robot Centric", group="Iterative Opmode")
 public class MecanumDrive extends LinearOpMode {
 
@@ -22,6 +24,8 @@ public class MecanumDrive extends LinearOpMode {
     private DcMotor intake = null;
 
     private DcMotor launcher = null;
+
+    private AprilTagAlignerBlue aprilTagAligner;
 
     private boolean intakeState = false;
     private int intakeCounter = 0;
@@ -54,6 +58,9 @@ public class MecanumDrive extends LinearOpMode {
         backRight = hardwareMap.get(DcMotor.class, "right_back"); // 3
         intake = hardwareMap.get(DcMotor.class, "intake");
         launcher = hardwareMap.get(DcMotor.class, "launcher");
+
+        aprilTagAligner = new AprilTagAlignerBlue(this);
+        aprilTagAligner.init();
 
         // Right side is reversed (confirmed on the robot; matches pedro/Constants.java)
         frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -91,6 +98,10 @@ public class MecanumDrive extends LinearOpMode {
 
             toggleIntake();
 
+
+            if (gamepad1.dpad_down) {
+                aprilTagAligner.align();
+            }
         }
     }
 }
