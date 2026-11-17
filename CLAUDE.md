@@ -56,6 +56,7 @@ Must match the Robot Controller configuration exactly:
 | Launcher motor | `launcher` |
 | Limelight 3A | `limelight` |
 | goBILDA Pinpoint | `pinpoint` |
+| Flywheel magnet sensor (digital) | `mag_switch` |
 
 Limelight pipelines: `1` = pollen / game piece, `2` = AprilTags.
 

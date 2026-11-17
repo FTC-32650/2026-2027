@@ -14,10 +14,12 @@
 | Subsystem | Status | Notes |
 |---|---|---|
 | 🚗 Mecanum drive | ✅ Working | Robot-centric TeleOp on gamepad 1 |
-| 🧲 Intake | ✅ Working | Runs while **Square** is held |
-| 🚀 Launcher | 🔧 In progress | Runs while **Cross** is held; being developed now |
+| 🧲 Intake | ✅ Working | **Square** toggles it on and off |
+| 🚀 Launcher | 🔧 In progress | Motor is set up, but no button runs it in TeleOp right now |
+| 🧭 Flywheel position | 🧪 Testing | Magnet sensor test OpMode (`Flywheel Position Test`) |
+| 🎯 Auto-aim | 🔧 In progress | **D-pad down** calls the Limelight aligner; it reads the target but doesn't move anything yet |
 | 👁️ Limelight vision | 🧪 Testing | Pollen tracking (pipeline 1) and AprilTags (pipeline 2) |
-| 🗺️ Pedro Pathing | 🔧 Tuning | Pinpoint odometry + Foresight follower; tuned values saved |
+| 🗺️ Pedro Pathing | 🔧 Tuning | Pinpoint odometry + Foresight follower; in Gradle and compiling, tuned values saved |
 | 🎯 Turret | ⏳ Not started | |
 | 🤖 Autonomous routines | ⏳ Not started | Only vision test OpModes so far |
 
@@ -30,14 +32,29 @@ These show up on the Driver Station.
 ### TeleOp
 | Name | File | What it does |
 |---|---|---|
-| **Mecanum Drive Robot Centric** | `MecanumDrive.java` | Main driving code. Left stick drives/strafes, right stick turns, **Square** runs the intake, **Cross** runs the launcher. |
+| **Mecanum Drive Robot Centric** | `MecanumDrive.java` | Main driving code. See the controls below. |
+| **Flywheel Position Test** | `FlywheelPosition.java` | Shows on telemetry whether the magnet (hall-effect) sensor `mag_switch` sees the magnet. |
+
+**Controls (gamepad 1)**
+
+| Input | Does |
+|---|---|
+| Left stick | Drive forward/back and strafe |
+| Right stick (X) | Turn |
+| **Square** | Toggle the intake on/off |
+| **D-pad down** | Auto-aim with the Limelight (work in progress, see below) |
 
 ### Autonomous (tests)
 | Name | File | What it does |
 |---|---|---|
 | **PollenTrackingTest** | `PollenTrackingTest.java` | Finds a game piece with the Limelight, drives toward it, and runs the intake once it's close. |
-| **AprilTagTrackerBlue** | `AprilTagTrackerBlue.java` | Finds the largest AprilTag and steers toward it — start of blue-alliance scoring logic. |
+| **AprilTagTrackerBlue** | `AprilTagTrackerBlue.java` | Turns to center the largest AprilTag, then drives toward it and stops once it's close. Start of blue-alliance scoring logic. |
 | **LimelightTest** | `LimelightTest.java` | Just prints what the Limelight sees (TX, TY, area) to telemetry. Good for checking the camera. |
+
+### Helper classes (not OpModes)
+| Class | File | What it does |
+|---|---|---|
+| **AprilTagAlignerBlue** | `AprilTagAlignerBlue.java` | Limelight auto-aim helper used by the TeleOp. Starts the Limelight on the AprilTag pipeline; `align()` is still a stub. Not the same thing as `AprilTagTrackerBlue`. |
 
 ### Pedro Pathing tuners
 Found in `pedro/Tuning.java`: **Mecanum Tuner**, **Pinpoint Tuner**, **Foresight Tuner**, and **Tests** (hold, line, and curve tests).
@@ -58,6 +75,7 @@ The names in the Robot Controller config **must match these exactly**.
 | Launcher motor | `launcher` | — |
 | Limelight 3A | `limelight` | — |
 | goBILDA Pinpoint | `pinpoint` | — |
+| Flywheel magnet sensor (digital) | `mag_switch` | — |
 
 **Limelight pipelines:** `1` = pollen / game piece · `2` = AprilTags
 
@@ -68,6 +86,8 @@ The names in the Robot Controller config **must match these exactly**.
 ```
 TeamCode/src/main/java/org/firstinspires/ftc/teamcode/
 ├── MecanumDrive.java          ← main TeleOp
+├── AprilTagAlignerBlue.java   ← auto-aim helper used by the TeleOp
+├── FlywheelPosition.java      ← flywheel magnet sensor test
 ├── PollenTrackingTest.java    ← vision: drive to game piece
 ├── AprilTagTrackerBlue.java   ← vision: drive to AprilTag
 ├── LimelightTest.java         ← vision: camera check
@@ -88,19 +108,40 @@ Everything outside `TeamCode/` is the official FTC SDK — don't edit it.
 3. Wait for Gradle to sync.
 4. Plug in the Control Hub (or connect over Wi-Fi) and press **Run ▶**.
 
+Building from the command line (needs the Android SDK and `ANDROID_HOME` set):
+
+```bash
+echo "sdk.dir=$ANDROID_HOME" > local.properties     # only if local.properties is missing
+./gradlew --no-daemon -q --max-workers=1 :TeamCode:compileDebugJavaWithJavac   # quick compile check
+./gradlew --no-daemon -q --max-workers=1 assembleDebug                         # full Robot Controller APK
+```
+
+If the first build fails with HTTP 429 from Maven Central, just run it again.
+
+---
+
+## 🤖 Working with Claude Code
+
+`CLAUDE.md` has the build steps, config names and coding rules for the repo. `.claude/agents/` adds four helpers: **ftc-reviewer** (reviews code changes), **repo-explorer** (finds where things are), **doc-writer** (docs) and **test-writer** (tests for logic that doesn't need hardware).
+
 ---
 
 ## ⚠️ Known issues
 
-- **Pedro Pathing isn't listed in the Gradle dependencies yet**, so the `pedro/` code won't compile until it's added to `build.dependencies.gradle`.
-- **AprilTagTrackerBlue doesn't turn correctly** — both sides get the same power, and forward power is always on, so it never stops at the tag.
+- **The launcher has no button in TeleOp.** The **Cross** binding was removed when the intake became a toggle, so the `launcher` motor is set up but never runs.
+- **Auto-aim doesn't move yet.** `AprilTagAlignerBlue.align()` reads the Limelight's TX and stops there.
+- **AprilTagAlignerBlue gets its hardware from the Blocks `hardwareMap`** (`BlocksOpModeCompanion`) instead of the TeleOp's own. That's probably empty in a Java OpMode, which would crash the TeleOp during init. Needs testing on the robot.
+- **AprilTagTrackerBlue follows any AprilTag**, red-alliance ones included, not just blue.
 
 ---
 
 ## ✅ To do
 
-- [ ] Add Pedro Pathing to Gradle
-- [ ] Fix AprilTag tracking
+- [x] Add Pedro Pathing to Gradle
+- [x] Fix AprilTag tracking (turning and stopping)
+- [ ] Give the launcher a button again
+- [ ] Finish aiming: Limelight auto-align (D-pad down) or manual aim with L1/R1
+- [ ] Only track blue-alliance AprilTags
 - [ ] Build the turret
 - [ ] Write real autonomous routines
 - [ ] Field-centric drive option
