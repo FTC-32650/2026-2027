@@ -25,10 +25,16 @@ public class MecanumDrive extends LinearOpMode {
 
     private DcMotor launcher = null;
 
+    private DcMotor transfer = null;
+
     private AprilTagAlignerBlue aprilTagAligner;
 
     private boolean intakeState = false;
     private int intakeCounter = 0;
+
+    private boolean transferState = false;
+
+    private int transferCounter = 0;
 
     public void toggleIntake()
     {
@@ -40,11 +46,29 @@ public class MecanumDrive extends LinearOpMode {
         intakeCounter++;
         if (intakeState)
         {
-            intake.setPower(-1.0);
+            intake.setPower(1.0);
         }
         else
         {
             intake.setPower(0);
+        }
+    }
+
+    public void toggleTransfer()
+    {
+        if(gamepad1.cross && transferCounter > 30)
+        {
+            transferState = !transferState;
+            transferCounter = 0;
+        }
+        transferCounter++;
+        if(transferState)
+        {
+            transfer.setPower(1.0);
+        }
+        else
+        {
+            transfer.setPower(0);
         }
     }
 
@@ -58,9 +82,10 @@ public class MecanumDrive extends LinearOpMode {
         backRight = hardwareMap.get(DcMotor.class, "right_back"); // 3
         intake = hardwareMap.get(DcMotor.class, "intake");
         launcher = hardwareMap.get(DcMotor.class, "launcher");
+        transfer = hardwareMap.get(DcMotor.class, "transfer");
 
-        aprilTagAligner = new AprilTagAlignerBlue(this);
-        aprilTagAligner.init();
+        //aprilTagAligner = new AprilTagAlignerBlue(this);
+        //aprilTagAligner.init();
 
         // Right side is reversed (confirmed on the robot; matches pedro/Constants.java)
         frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -97,10 +122,11 @@ public class MecanumDrive extends LinearOpMode {
             */
 
             toggleIntake();
+            toggleTransfer();
 
 
             if (gamepad1.dpad_down) {
-                aprilTagAligner.align();
+               // aprilTagAligner.align();
             }
         }
     }
